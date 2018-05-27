@@ -1,21 +1,22 @@
 <template>
   <div class="recommend">
     <div class="recommend-content">
-      <div class="slider-wrapper">
-
+      <div v-if="recommendData" class="slider-wrapper">
+        <slider>
+        <div v-for="item in recommendData.slider"
+            :key="item.id"
+        >
+          <a :href="item.linkUrl">
+            <img :src="item.picUrl">
+          </a>
+        </div>
+        </slider>
       </div>
       <div class="recommend-list">
-       <h1 class="list-title">
-       热门歌单推荐
-       </h1>
-        <ul v-if="recommendData">
-          <li v-for="list in recommendData.slider"
-              :key="list.id"
-          >
-            <a :href="list.linkUrl">
-              <img :src="list.picUrl" alt="hh">
-            </a>
-          </li>
+        <h1 class="list-title">
+         热门歌单推荐
+        </h1>
+        <ul>
         </ul>
       </div>
     </div>
@@ -27,6 +28,7 @@
   import Jsonp from 'common/js/jsonp'
   import {getRecommend} from 'api/recommend'
   import {ERR_OK} from 'api/config'
+  import Slider from 'base/slider/slider'
   export default {
     data() {
       return {
@@ -44,6 +46,9 @@
         })
       }
 
+    },
+    components: {
+      Slider
     }
   }
 </script>
