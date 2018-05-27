@@ -12,7 +12,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: Recommend
+      redirect: '/recommend'
     },
     {
       path: '/recommend',

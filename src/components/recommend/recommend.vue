@@ -8,24 +8,41 @@
        <h1 class="list-title">
        热门歌单推荐
        </h1>
-        <ul>
-
+        <ul v-if="recommendData">
+          <li v-for="list in recommendData.slider"
+              :key="list.id"
+          >
+            <a :href="list.linkUrl">
+              <img :src="list.picUrl" alt="hh">
+            </a>
+          </li>
         </ul>
       </div>
     </div>
-   recommend
   </div>
 </template>
 
 <script>
   import Vue from 'vue'
   import Jsonp from 'common/js/jsonp'
-  import {getRecommond} from 'api/recommond'
+  import {getRecommend} from 'api/recommend'
+  import {ERR_OK} from 'api/config'
   export default {
+    data() {
+      return {
+        recommendData: null,
+      }
+    },
     created() {
-      getRecommond()
+      this._getRecommend()
     },
     methods: {
+      _getRecommend() {
+        getRecommend().then((resolve) => {
+          if(resolve.code === ERR_OK)
+          this.recommendData = resolve.data
+        })
+      }
 
     }
   }
