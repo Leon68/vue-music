@@ -35,7 +35,7 @@
       },
       interval: {
         type: Number,
-        default: 400
+        default: 4000
       }
     },
     mounted() {
@@ -47,10 +47,54 @@
           this._play()
         }
       }, 20)
-
+      
+       window.addEventListener('resize', () => {
+        if (!this.slider || !this.slider.enabled) {
+          return
+        }
+        clearTimeout(this.resizeTimer)
+        this.resizeTimer = setTimeout(() => {
+          if (this.slider.isInTransition) {
+            this._onScrollEnd()
+          } else {
+            if (this.autoPlay) {
+              this._play()
+            }
+          }
+          this.refresh()
+        }, 60)
+      })
     },
+    activated() {
+      console.log('actcivated')
+      this.slider.enable()
+      let pageIndex = this.slider.getCurrentPage().pageX
+      this.slider.goToPage(pageIndex, 0, 0)
+      this.currentIndex = pageIndex
+      if (this.autoPlay) {
+        this._play()
+      }
+    },
+    deactivated() {
+      console.log('deactcivated')
+      this.slider.disable()
+      clearTimeout(this.timer)
+    },
+    beforeDestroy() {
+      console.log('destroy')
+      this.slider.disable()
+      clearTimeout(this.timer)
+    },
+
     methods: {
-      _setSliderWidth() {
+      refresh() {
+        console.log('refresh')
+        if (this.slider) {
+          this._setSliderWidth(true)
+          this.slider.refresh()
+        }
+      },
+      _setSliderWidth(isResize) {
         this.children = this.$refs.sliderGroup.children
         let width = 0
         let sliderWidth = this.$refs.slider.clientWidth
@@ -60,7 +104,7 @@
           addClass(child, 'slider-item')
           width += sliderWidth
         }
-        if(this.loop) {
+        if(this.loop && !isResize) {
           width += 2 * sliderWidth
         }
         this.$refs.sliderGroup.style.width = width + 'px'
@@ -84,18 +128,29 @@
               }
             }
           },
-          click: true
         })
 
-        this.slider.on('scrollEnd', () => {
-          let pageIndex = this.slider.getCurrentPage().pageX
-          this.currentIndex = pageIndex
+        this.slider.on('scrollEnd', this._onScrollEnd)
 
+        this.slider.on('touchEnd', () => {
           if (this.autoPlay) {
             this._play()
           }
         })
 
+        this.slider.on('beforeScrollStart', () => {
+          if (this.autoPlay) {
+            clearTimeout(this.timer)
+          }
+        })
+      },
+      _onScrollEnd() {
+        let pageIndex = this.slider.getCurrentPage().pageX
+        this.currentIndex = pageIndex
+
+        if (this.autoPlay) {
+          this._play()
+        }
       },
       _play() {
         clearTimeout(this.timer)
