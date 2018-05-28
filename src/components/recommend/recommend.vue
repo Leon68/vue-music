@@ -2,6 +2,7 @@
   <div class="recommend">
     <div class="recommend-content">
       <div v-if="recommendData" class="slider-wrapper">
+        <div class="slider-content">
         <slider>
         <div v-for="item in recommendData.slider"
             :key="item.id"
@@ -11,6 +12,7 @@
           </a>
         </div>
         </slider>
+      </div>
       </div>
       <div class="recommend-list">
         <h1 class="list-title">
