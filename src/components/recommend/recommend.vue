@@ -1,10 +1,10 @@
 <template>
   <div class="recommend">
     <div class="recommend-content">
-      <div v-if="recommendData" class="slider-wrapper">
+      <div v-if="recommendSlider" class="slider-wrapper">
         <div class="slider-content">
         <slider>
-        <div v-for="item in recommendData.slider"
+        <div v-for="item in recommendSlider"
             :key="item.id"
         >
           <a :href="item.linkUrl">
@@ -28,25 +28,44 @@
 <script>
   import Vue from 'vue'
   import Jsonp from 'common/js/jsonp'
-  import {getRecommend} from 'api/recommend'
+  import {getRecommend, getDiscLists, getMvLists} from 'api/recommend'
   import {ERR_OK} from 'api/config'
   import Slider from 'base/slider/slider'
   export default {
     data() {
       return {
-        recommendData: null,
+        recommendSlider: null,
+        discLists: null,
+        mvLists: null,
       }
     },
     created() {
       this._getRecommend()
+      this._getDiscLists()
+      this._getMvLists()
+
     },
     methods: {
       _getRecommend() {
         getRecommend().then((resolve) => {
           if(resolve.code === ERR_OK)
-          this.recommendData = resolve.data
+          this.recommendSlider = resolve.data.slider
         })
-      }
+      },
+
+      _getDiscLists() {
+        getDiscLists().then((resolve) => {
+          if(resolve.code === ERR_OK)
+            this.discLists = resolve
+        })
+      },
+      _getMvLists() {
+        getMvLists().then((resolve) => {
+          if(resolve.code === ERR_OK)
+            this.mvLists = resolve.data
+        })
+      },
+
 
     },
     components: {

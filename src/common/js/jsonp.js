@@ -8,6 +8,7 @@ export default function jsonp(url, data, option) {
         console.log(data)
         resolve(data)
       } else {
+        console.log(err)
         reject(err)
       }
     })

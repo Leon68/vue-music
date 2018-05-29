@@ -47,7 +47,7 @@
           this._play()
         }
       }, 20)
-      
+
        window.addEventListener('resize', () => {
         if (!this.slider || !this.slider.enabled) {
           return
