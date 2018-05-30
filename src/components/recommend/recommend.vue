@@ -9,7 +9,7 @@
                    :key="item.id"
               >
                 <a :href="item.linkUrl">
-                  <img @load="loadImage" :src="item.picUrl">
+                  <img class="needclick" @load="loadImage" :src="item.picUrl">
                 </a>
               </div>
             </slider>
@@ -22,7 +22,7 @@
           <ul v-if="discList" class="item">
             <li class="list-content" v-for="item in discList.recomPlaylist.data.v_hot">
               <div class="icon">
-                <img width="60" height="60" :src="item.cover">
+                <img width="60" height="60" v-lazy="item.cover">
               </div>
               <div class="text">
                 <h2 class="name">{{item.title}}</h2>
@@ -38,7 +38,7 @@
           <ul v-if="mvList" class="item">
             <li class="list-content" v-for="item in mvList.mvlist">
               <div class="icon">
-                <img width="60" height="60" :src="item.picurl">
+                <img width="60" height="60" v-lazy="item.picurl">
               </div>
               <div class="text">
                 <h2 class="name">{{item.mvtitle}}</h2>
