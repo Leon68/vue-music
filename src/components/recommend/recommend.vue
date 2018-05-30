@@ -48,6 +48,9 @@
           </ul>
         </div>
       </div>
+      <div class="loading-container" v-show="!discList && !mvList">
+        <loading></loading>
+      </div>
     </scroll>
   </div>
 </template>
@@ -59,6 +62,7 @@
   import {ERR_OK} from 'api/config'
   import Slider from 'base/slider/slider'
   import Scroll from 'base/scroll/scroll'
+  import Loading from 'base/loading/loading'
 
   export default {
     data() {
@@ -71,8 +75,10 @@
     },
     created() {
       this._getRecommend()
-      this._getDiscLists()
-      this._getMvLists()
+      setTimeout(() => {
+        this._getDiscLists()
+        this._getMvLists()
+      }, 2000)
 
     },
     methods: {
@@ -115,6 +121,7 @@
     },
     components: {
       Slider,
+      Loading,
       Scroll
     }
   }
