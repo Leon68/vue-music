@@ -1,27 +1,54 @@
 <template>
   <div class="recommend">
-    <div class="recommend-content">
-      <div v-if="recommendSlider" class="slider-wrapper">
-        <div class="slider-content">
-        <slider>
-        <div v-for="item in recommendSlider"
-            :key="item.id"
-        >
-          <a :href="item.linkUrl">
-            <img :src="item.picUrl">
-          </a>
+    <scroll :data="mvList" ref="scroll" class="recommend-content">
+      <div>
+        <div v-if="recommendSlider" class="slider-wrapper">
+          <div class="slider-content">
+            <slider>
+              <div v-for="item in recommendSlider"
+                   :key="item.id"
+              >
+                <a :href="item.linkUrl">
+                  <img @load="loadImage" :src="item.picUrl">
+                </a>
+              </div>
+            </slider>
+          </div>
         </div>
-        </slider>
+        <div class="recommend-list">
+          <h1 class="list-title">
+            热门歌单推荐
+          </h1>
+          <ul v-if="discList" class="item">
+            <li class="list-content" v-for="item in discList.recomPlaylist.data.v_hot">
+              <div class="icon">
+                <img width="60" height="60" :src="item.cover">
+              </div>
+              <div class="text">
+                <h2 class="name">{{item.title}}</h2>
+                <p class="desc">播放量：{{item.listen_num | toThouthend}}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="recommend-list">
+          <h1 class="list-title">
+            热门MV推荐
+          </h1>
+          <ul v-if="mvList" class="item">
+            <li class="list-content" v-for="item in mvList.mvlist">
+              <div class="icon">
+                <img width="60" height="60" :src="item.picurl">
+              </div>
+              <div class="text">
+                <h2 class="name">{{item.mvtitle}}</h2>
+                <p class="desc">{{item.mvdesc}}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
-      </div>
-      <div class="recommend-list">
-        <h1 class="list-title">
-         热门歌单推荐
-        </h1>
-        <ul>
-        </ul>
-      </div>
-    </div>
+    </scroll>
   </div>
 </template>
 
@@ -31,12 +58,15 @@
   import {getRecommend, getDiscLists, getMvLists} from 'api/recommend'
   import {ERR_OK} from 'api/config'
   import Slider from 'base/slider/slider'
+  import Scroll from 'base/scroll/scroll'
+
   export default {
     data() {
       return {
         recommendSlider: null,
-        discLists: null,
-        mvLists: null,
+        discList: null,
+        mvList: null,
+        checkLoaded: false,
       }
     },
     created() {
@@ -48,28 +78,44 @@
     methods: {
       _getRecommend() {
         getRecommend().then((resolve) => {
-          if(resolve.code === ERR_OK)
-          this.recommendSlider = resolve.data.slider
+          if (resolve.code === ERR_OK)
+            this.recommendSlider = resolve.data.slider
         })
       },
 
       _getDiscLists() {
         getDiscLists().then((resolve) => {
-          if(resolve.code === ERR_OK)
-            this.discLists = resolve
+          if (resolve.code === ERR_OK)
+            this.discList = resolve
         })
       },
       _getMvLists() {
         getMvLists().then((resolve) => {
-          if(resolve.code === ERR_OK)
-            this.mvLists = resolve.data
+          if (resolve.code === ERR_OK)
+            this.mvList = resolve.data
         })
       },
+      loadImage() {
+        if (!this.checkLoaded) {
+          this.$refs.scroll.refresh()
+          this.checkLoaded = true
+        }
+      }
 
 
     },
+    filters: {
+      toThouthend(value) {
+        if (value > 10000) {
+          value = (value / 10000).toFixed(2)
+          return value + '万'
+        }
+
+      }
+    },
     components: {
-      Slider
+      Slider,
+      Scroll
     }
   }
 </script>
@@ -107,26 +153,30 @@
           color: $color-theme
         .item
           display: flex
+          flex-direction: column
           box-sizing: border-box
-          align-items: center
+          align-items: flex-start
           padding: 0 20px 20px 20px
-          .icon
-            flex: 0 0 60px
-            width: 60px
-            padding-right: 20px
-          .text
+          .list-content
             display: flex
-            flex-direction: column
-            justify-content: center
-            flex: 1
-            line-height: 20px
-            overflow: hidden
-            font-size: $font-size-medium
-            .name
-              margin-bottom: 10px
-              color: $color-text
-            .desc
-              color: $color-text-d
+            padding: 10px 0
+            .icon
+              flex: 0 0 60px
+              width: 60px
+              padding-right: 20px
+            .text
+              display: flex
+              flex-direction: column
+              justify-content: center
+              flex: 1
+              line-height: 20px
+              overflow: hidden
+              font-size: $font-size-medium
+              .name
+                margin-bottom: 10px
+                color: $color-text
+              .desc
+                color: $color-text-d
       .loading-container
         position: absolute
         width: 100%
