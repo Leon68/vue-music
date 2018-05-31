@@ -32,14 +32,10 @@
         if (!this.$refs.wrapper) {
           return
         }
-
-        console.log('refs', this.$refs.wrapper)
         this.scroll = new BScroll(this.$refs.wrapper, {
           probeType: this.probeType,
           click: this.click,
         })
-
-
       },
       enabel() {
         this.scroll && this.scroll.enable()
@@ -49,7 +45,6 @@
       },
       refresh() {
         this.scroll && this.scroll.refresh()
-        console.log('recommond-ref', this.$refs.scroll)
       }
     },
     watch: {

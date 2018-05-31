@@ -57,7 +57,6 @@
 
 <script>
   import Vue from 'vue'
-  import Jsonp from 'common/js/jsonp'
   import {getRecommend, getDiscLists, getMvLists} from 'api/recommend'
   import {ERR_OK} from 'api/config'
   import Slider from 'base/slider/slider'
@@ -75,10 +74,8 @@
     },
     created() {
       this._getRecommend()
-      setTimeout(() => {
-        this._getDiscLists()
-        this._getMvLists()
-      }, 2000)
+      this._getDiscLists()
+      this._getMvLists()
 
     },
     methods: {
@@ -88,7 +85,6 @@
             this.recommendSlider = resolve.data.slider
         })
       },
-
       _getDiscLists() {
         getDiscLists().then((resolve) => {
           if (resolve.code === ERR_OK)
@@ -107,8 +103,6 @@
           this.checkLoaded = true
         }
       }
-
-
     },
     filters: {
       toThouthend(value) {
@@ -116,7 +110,6 @@
           value = (value / 10000).toFixed(2)
           return value + '万'
         }
-
       }
     },
     components: {
