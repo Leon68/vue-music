@@ -1,9 +1,9 @@
 <template>
   <div class="singer">
-    <scroll :data="singerList" ref="scroll">
+    <scroll :data="singerList" ref="scroll" style="height: 100%">
       <div>
         <ul v-if="singerList">
-          <li class="singer-list" v-for="item in singerList.singerlist"
+          <li class="singer-list" v-for="item in singerList"
               :key="item.singer_id"
           >
             <img class="singer-img" width="80" height="80" v-if="listIndex === -100" v-lazy="item.singer_pic" alt="who">
@@ -50,7 +50,7 @@
       _getSingerList() {
         getSingerList(this.listIndex).then((res) => {
           if (res.code === ERR_OK) {
-            this.singerList = res.singerList.data
+            this.singerList = res.singerList.data.singerlist
           }
         })
       },
@@ -91,7 +91,6 @@
     top: 88px
     bottom: 0
     width: 100%
-    height: 100%
     .singer-list
       display: flex
       flex-direction: row

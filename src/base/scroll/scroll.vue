@@ -14,7 +14,6 @@
         default: 1
       },
       data: {
-        type: Object,
         default: null
       },
       click: {
@@ -51,6 +50,7 @@
       data() {
         setTimeout(() =>{
           this._initScroll()
+          console.log('dataChange')
         }, 20)
 
       }
