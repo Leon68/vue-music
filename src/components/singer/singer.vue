@@ -1,6 +1,6 @@
 <template>
   <div class="singer">
-    <scroll :data="singerList" ref="scroll">
+    <scroll :data="singerList" ref="scroll" class="list">
       <div>
         <ul v-if="singerList">
           <li class="singer-list" v-for="item in singerList.singerlist"
@@ -28,13 +28,13 @@
 
 <script>
   import Vue from 'vue'
-  import {getSingerList} from 'api/singer'
-  import {ERR_OK} from 'api/config'
+  import { getSingerList } from 'api/singer'
+  import { ERR_OK } from 'api/config'
   import Scroll from 'base/scroll/scroll'
   import Loading from 'base/loading/loading'
 
   export default {
-    data() {
+    data () {
       return {
         singerList: null,
         listIndex: -100,
@@ -42,25 +42,26 @@
         currentIndex: 0,
       }
     },
-    created() {
+    created () {
       this._getSingerList()
       this._createLetterTab()
     },
     methods: {
-      _getSingerList() {
+      _getSingerList () {
         getSingerList(this.listIndex).then((res) => {
           if (res.code === ERR_OK) {
             this.singerList = res.singerList.data
+            this.$refs.scroll.refresh()
           }
         })
       },
-      _createLetterTab() {
+      _createLetterTab () {
         this.letterTab.push('热门')
         for (let i = 65; i < 91; i++) {
           this.letterTab.push(String.fromCharCode(i))
         }
       },
-      toLetter(index) {
+      toLetter (index) {
         this.currentIndex = index
         if (index === 0) {
           this.listIndex = -100
@@ -70,7 +71,7 @@
       }
     },
     watch: {
-      listIndex() {
+      listIndex () {
         this._getSingerList()
         this.$refs.scroll.refresh()
       }
@@ -92,6 +93,10 @@
     bottom: 0
     width: 100%
     height: 100%
+    .list {
+      height: 100%;
+      overflow: hidden
+    }
     .singer-list
       display: flex
       flex-direction: row
