@@ -1,28 +1,18 @@
 <template>
   <div class="singer">
-    <scroll :data="singerList" ref="scroll" style="height: 100%">
-      <div>
-        <ul v-if="singerList">
-          <li class="singer-list" v-for="item in singerList"
-              :key="item.singer_id"
-          >
-            <img class="singer-img" width="80" height="80" v-if="listIndex === -100" v-lazy="item.singer_pic" alt="who">
-            <p class="singer-name">{{item.singer_name}}</p>
-          </li>
-        </ul>
-      </div>
+    <scroll :data="singerList" style="height: 100%">
+      <ul>
+        <li v-for="items in singerList">
+          <h2>{{items.title}}</h2>
+          <div v-for="item in items.items">
+            <img width="80" height="80"
+                 v-lazy="item.singer_pic"
+                 :onerror="defaultImg" alt="">
+            <p>{{item.singer_name}}</p>
+          </div>
+        </li>
+      </ul>
     </scroll>
-    <ul class="letter-tab">
-      <li class="letter"
-          :class="{active: currentIndex === index}"
-          v-for="(item,index) in letterTab"
-          @click="toLetter(index)"
-      >{{item}}
-      </li>
-    </ul>
-    <div class="loading-container" v-show="!singerList">
-      <loading></loading>
-    </div>
   </div>
 </template>
 
@@ -31,15 +21,19 @@
   import {getSingerList} from 'api/singer'
   import {ERR_OK} from 'api/config'
   import Scroll from 'base/scroll/scroll'
-  import Loading from 'base/loading/loading'
+  const img = require('common/image/default.png')
+
+  console.log(img)
 
   export default {
     data() {
       return {
-        singerList: null,
+        singerList: [],
+        hotSingers: [],
         listIndex: -100,
         letterTab: [],
         currentIndex: 0,
+        defaultImg: `this.src="${img}"`
       }
     },
     created() {
@@ -48,11 +42,31 @@
     },
     methods: {
       _getSingerList() {
-        getSingerList(this.listIndex).then((res) => {
-          if (res.code === ERR_OK) {
-            this.singerList = res.singerList.data.singerlist
+          getSingerList(-100).then((res) => {
+            if (res.code === ERR_OK) {
+              this.hotSingers = {
+                title: '热门',
+                items: res.singerList.data.singerlist.slice(0, 10)
+              }
+            }
+          })
+          for (let i = 1; i < 27; i++) {
+            getSingerList(i).then((res) => {
+              let singers = {}
+              if (res.code === ERR_OK) {
+                singers = {
+                  title: String.fromCharCode(i + 64),
+                  items: res.singerList.data.singerlist.slice(0, 10)
+                }
+              }
+              return this.singerList.push(singers)
+            }).then((res) => {
+              console.log(res)
+//              res.sort((a, b) => {
+//                return a.title.charCodeAt() - b.title.charCodeAt()
+//              })
+            })
           }
-        })
       },
       _createLetterTab() {
         this.letterTab.push('热门')
@@ -77,8 +91,7 @@
     },
     computed: {},
     components: {
-      Scroll,
-      Loading
+      Scroll
     }
 
   }
@@ -114,9 +127,4 @@
         color: white
       .active
         color: red
-    .loading-container
-      position: absolute
-      width: 100%
-      top: 50%
-      transform: translateY(-50%)
 </style>
