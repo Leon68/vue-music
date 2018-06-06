@@ -1,7 +1,8 @@
 <template>
   <div class="singer">
-    <scroll :data="singerList" ref="scroll" style="height: 100%">
+    <scroll :data="singerList" ref="scroll" style="height: 100%;">
       <div>
+        <div class="title-block">{{this.letterTab[this.currentIndex]}}</div>
         <ul v-if="singerList">
           <li class="singer-list" v-for="item in singerList"
               :key="item.singer_id"
@@ -75,12 +76,10 @@
         this.$refs.scroll.refresh()
       }
     },
-    computed: {},
     components: {
       Scroll,
       Loading
     }
-
   }
 </script>
 
@@ -91,6 +90,10 @@
     top: 88px
     bottom: 0
     width: 100%
+    overflow: hidden
+    .title-block
+      text-align: center
+      padding: 2px 20px
     .singer-list
       display: flex
       flex-direction: row
