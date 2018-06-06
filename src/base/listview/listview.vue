@@ -1,28 +1,33 @@
 <template>
-  <scroll :data="data" ref="scroll" style="height: 100%">
-    <div>
-      <ul v-if="singerList">
-        <li class="singer-list" v-for="item in data"
-            :key="item.singer_id"
+  <div>
+  <scroll :data="data" ref="lisview" class="listview">
+      <ul>
+        <li class="list-groupm" v-for="group in data"
         >
-          <img class="singer-img" width="80" height="80" v-if="listIndex === -100" v-lazy="item.singer_pic" alt="who">
-          <p class="singer-name">{{item.singer_name}}</p>
+          <h2 class="list-group-title">{{group.title}}</h2>
+          <ul>
+           <li class="list-group-item"
+               v-for="item in group.items"
+           >
+             <img class="avatar" v-lazy="item.singer_pic" alt="who">
+             <span class="name">{{item.singer_name}}</span>
+           </li>
+          </ul>
         </li>
       </ul>
-    </div>
   </scroll>
-  <ul class="letter-tab">
-    <li class="letter"
-        :class="{active: currentIndex === index}"
-        v-for="(item,index) in letterTab"
-        @click="toLetter(index)"
-    >{{item}}
-    </li>
-  </ul>
-  <div class="loading-container" v-show="!singerList">
+  <!--<ul class="letter-tab">-->
+    <!--<li class="letter"-->
+        <!--:class="{active: currentIndex === index}"-->
+        <!--v-for="(item,index) in letterTab"-->
+        <!--@click="toLetter(index)"-->
+    <!--&gt;{{item}}-->
+    <!--</li>-->
+  <!--</ul>-->
+  <div class="loading-container" v-show="!data">
     <loading></loading>
   </div>
-
+</div>
 </template>
 
 <script>
@@ -32,8 +37,16 @@ import Loading from 'base/loading/loading'
     props: {
       data: {
         type: Array,
-        default: null
+        default: []
       }
+    },
+    created() {
+      console.log(this.data, 'data')
+
+    },
+    components: {
+      Scroll,
+      Loading
     }
   }
 
