@@ -7,7 +7,7 @@
           <div v-for="item in items.items">
             <img width="80" height="80"
                  v-lazy="item.singer_pic"
-                 :onerror="defaultImg" alt="">
+            >
             <p>{{item.singer_name}}</p>
           </div>
         </li>
@@ -24,8 +24,6 @@
 
   const img = require('common/image/default.png')
 
-  console.log(img)
-
   export default {
     data() {
       return {
@@ -33,7 +31,7 @@
         listIndex: -100,
         letterTab: [],
         currentIndex: 0,
-        defaultImg: `this.src="${img}"`
+        defaultImg: `this.src='${img}'`
       }
     },
     created() {
@@ -44,13 +42,11 @@
       _getSingerList() {
         let arr = Array.from(new Array(26), (val, index) => index + 1)
         arr.unshift(-100)
-        console.log(arr)
         let promises = arr.map((i) => {
           return new Promise((resolve, reject) => {
             getSingerList(i).then((res) => {
               let singers = {}
               if (i === -100) {
-                console.log(i)
                 if (res.code === ERR_OK) {
                   singers = {
                     title: '热门',
@@ -59,7 +55,6 @@
                 }
               } else {
                 if (res.code === ERR_OK) {
-                  console.log(i)
                   singers = {
                     title: String.fromCharCode(i + 64),
                     items: res.singerList.data.singerlist.slice(0, 10)
@@ -110,6 +105,7 @@
     top: 88px
     bottom: 0
     width: 100%
+    overflow: hidden
     .singer-list
       display: flex
       flex-direction: row
