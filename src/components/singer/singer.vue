@@ -21,6 +21,7 @@
   import {getSingerList} from 'api/singer'
   import {ERR_OK} from 'api/config'
   import Scroll from 'base/scroll/scroll'
+
   const img = require('common/image/default.png')
 
   console.log(img)
@@ -29,7 +30,6 @@
     data() {
       return {
         singerList: [],
-        hotSingers: [],
         listIndex: -100,
         letterTab: [],
         currentIndex: 0,
@@ -42,31 +42,37 @@
     },
     methods: {
       _getSingerList() {
-          getSingerList(-100).then((res) => {
-            if (res.code === ERR_OK) {
-              this.hotSingers = {
-                title: '热门',
-                items: res.singerList.data.singerlist.slice(0, 10)
-              }
-            }
-          })
-          for (let i = 1; i < 27; i++) {
+        let arr = Array.from(new Array(26), (val, index) => index + 1)
+        arr.unshift(-100)
+        console.log(arr)
+        let promises = arr.map((i) => {
+          return new Promise((resolve, reject) => {
             getSingerList(i).then((res) => {
               let singers = {}
-              if (res.code === ERR_OK) {
-                singers = {
-                  title: String.fromCharCode(i + 64),
-                  items: res.singerList.data.singerlist.slice(0, 10)
+              if (i === -100) {
+                console.log(i)
+                if (res.code === ERR_OK) {
+                  singers = {
+                    title: '热门',
+                    items: res.singerList.data.singerlist.slice(0, 10)
+                  }
+                }
+              } else {
+                if (res.code === ERR_OK) {
+                  console.log(i)
+                  singers = {
+                    title: String.fromCharCode(i + 64),
+                    items: res.singerList.data.singerlist.slice(0, 10)
+                  }
                 }
               }
-              return this.singerList.push(singers)
-            }).then((res) => {
-              console.log(res)
-//              res.sort((a, b) => {
-//                return a.title.charCodeAt() - b.title.charCodeAt()
-//              })
+              resolve(singers)
             })
-          }
+          })
+        })
+        Promise.all(promises).then((res) => {
+          this.singerList = res
+        })
       },
       _createLetterTab() {
         this.letterTab.push('热门')
