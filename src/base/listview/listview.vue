@@ -1,38 +1,43 @@
 <template>
-  <div>
-  <scroll :data="data" ref="lisview" class="listview">
+  <scroll :data="data" ref="listview" class="listview">
+    <ul>
+      <li class="list-group"
+          ref="listGroup"
+          v-for="group in data"
+      >
+        <h2 class="list-group-title">{{group.title}}</h2>
+        <ul>
+          <li class="list-group-item"
+              v-for="item in group.items"
+          >
+            <img class="avatar" v-lazy="item.singer_pic" alt="who">
+            <span class="name">{{item.singer_name}}</span>
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <div class="list-shortcut"
+         @touchmove.stop.prevent="onShortcutTouchMove"
+         @touchstart="onShortcutTouchStart">
       <ul>
-        <li class="list-groupm" v-for="group in data"
-        >
-          <h2 class="list-group-title">{{group.title}}</h2>
-          <ul>
-           <li class="list-group-item"
-               v-for="item in group.items"
-           >
-             <img class="avatar" v-lazy="item.singer_pic" alt="who">
-             <span class="name">{{item.singer_name}}</span>
-           </li>
-          </ul>
+        <li v-for="(item, index) in shortcutList"
+            :data-index="index"
+            class="item">
+          {{item}}
         </li>
       </ul>
+    </div>
+
   </scroll>
-  <!--<ul class="letter-tab">-->
-    <!--<li class="letter"-->
-        <!--:class="{active: currentIndex === index}"-->
-        <!--v-for="(item,index) in letterTab"-->
-        <!--@click="toLetter(index)"-->
-    <!--&gt;{{item}}-->
-    <!--</li>-->
-  <!--</ul>-->
-  <div class="loading-container" v-show="!data">
-    <loading></loading>
-  </div>
-</div>
 </template>
 
 <script>
-import Scroll from 'base/scroll/scroll'
-import Loading from 'base/loading/loading'
+  import Scroll from 'base/scroll/scroll'
+  import Loading from 'base/loading/loading'
+  import {getData}from 'common/js/dom'
+
+  const ANCHOR_HEIGHT = 18
+
   export default {
     props: {
       data: {
@@ -40,13 +45,42 @@ import Loading from 'base/loading/loading'
         default: []
       }
     },
+    computed: {
+      shortcutList() {
+        return this.data.map((item) => {
+          return item.title.slice(0,1)
+        })
+      }
+    },
     created() {
-      console.log(this.data, 'data')
-
+      this.touch = {}
     },
     components: {
       Scroll,
       Loading
+    },
+    methods: {
+      check(index) {
+        this.currentIndex = index
+      },
+      onShortcutTouchStart(e) {
+        let anchorIndex = getData(e.target, 'index')
+        let firstTouch = e.touches[0]
+        this.touch.y1 = firstTouch.pageY
+        this.touch.anchorIndex = anchorIndex
+        this._scrollTo(anchorIndex)
+      },
+      onShortcutTouchMove(e) {
+        let firstTouch = e.touches[0]
+        this.touch.y2 = firstTouch.pageY
+        let delta = (this.touch.y2 -this.touch.y1)/ANCHOR_HEIGHT | 0
+        let anchorIndex = this.touch.anchorIndex + delta
+        this._scrollTo(anchorIndex)
+      },
+      _scrollTo(index) {
+        this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0)
+
+      }
     }
   }
 
